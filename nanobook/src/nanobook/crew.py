@@ -11,30 +11,17 @@ class Nanobook():
     tasks: list[Task]
 
     @agent
-    def researcher(self) -> Agent:
+    def documentation_extraction_specialist(self) -> Agent:
         return Agent(
-            config=self.agents_config['researcher'], # type: ignore[index]
-            verbose=True
-        )
-
-    @agent
-    def reporting_analyst(self) -> Agent:
-        return Agent(
-            config=self.agents_config['reporting_analyst'], # type: ignore[index]
+            config=self.agents_config['documentation_extraction_specialist'], # type: ignore[index]
             verbose=True
         )
 
     @task
-    def research_task(self) -> Task:
+    def documentation_extraction_task(self) -> Task:
         return Task(
-            config=self.tasks_config['research_task'], # type: ignore[index]
-        )
-
-    @task
-    def reporting_task(self) -> Task:
-        return Task(
-            config=self.tasks_config['reporting_task'], # type: ignore[index]
-            output_file='report.md'
+            config=self.tasks_config['documentation_extraction_task'], # type: ignore[index]
+            agent=self.documentation_extraction_specialist()
         )
 
     @crew
