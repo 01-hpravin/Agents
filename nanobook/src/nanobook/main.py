@@ -8,6 +8,8 @@ from nanobook.crew import Nanobook
 
 warnings.filterwarnings("ignore", category=SyntaxWarning, module="pysbd")
 
+from dotenv import load_dotenv
+load_dotenv()
 
 def run():
     """

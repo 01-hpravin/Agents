@@ -1,7 +1,132 @@
 documentation_extraction_task:
   description: >
-    Gather documentation about {topic}
-    Make sure you find any interesting and relevant information given the {topic}
+    Use the ScrapeWebsiteTool and SerperDevTool to locate and scrape the official
+    documentation, GitHub README, and any supplementary reference pages for {topic}.
+    Extract all technically relevant content: API signatures, configuration keys and
+    their types/defaults, CLI commands and flags, code examples, and architecture
+    diagrams (as ASCII or described in prose). Strip badges, contributor lists, HTML
+    artifacts, and changelog noise. Organize the output into a clean Markdown document
+    with these sections:
+      ## Overview
+      ## Core API / Commands
+      ## Configuration Reference
+      ## Code Examples
+      ## Known Limitations & Gotchas
+    Do not infer or add content that is not present in the source material.
   expected_output: >
-    A detailed information about {topic}
+    A structured Markdown knowledge base document titled "Raw Extracted Documentation:
+    {topic}" containing all factual technical content organized under the five sections
+    above. Every code block must use the correct language tag. No hallucinated content.
   agent: documentation_extraction_specialist
+
+concept_mapping_task:
+  description: >
+    Using the Raw Extracted Documentation from the previous task as your only source
+    of truth, analyze {topic} and produce a Concept Map that captures:
+      1. Core Paradigm — one paragraph describing what kind of tool/library/system this is
+         and the mental model a developer needs to adopt.
+      2. Key Abstractions — a bulleted list of the 5-10 most important concepts, each with
+         a one-sentence definition grounded in the docs.
+      3. Component Relationships — describe how the major pieces connect; include a simple
+         ASCII dependency or data-flow diagram.
+      4. Learning Prerequisites — what a developer must already know before studying {topic}.
+      5. Common Pitfalls — the top 3-5 mistakes beginners make, sourced directly from the docs
+         or from patterns visible in the extracted examples.
+    Do not add opinions or content not found in the extracted documentation.
+  expected_output: >
+    A structured Markdown document titled "Concept Map: {topic}" with clearly labeled
+    sections for Core Paradigm, Key Abstractions (bulleted), Component Relationships
+    (including ASCII diagram), Learning Prerequisites, and Common Pitfalls. Each claim
+    must be traceable to the extracted docs.
+  agent: technical_architect_analyst
+  context:
+    - documentation_extraction_task
+
+curriculum_design_task:
+  description: >
+    Using the Concept Map for {topic} as your blueprint, design the full NanoBook
+    Table of Contents and chapter briefs. Structure the book into exactly four parts:
+      Part 1 — Prerequisites (what to know before starting)
+      Part 2 — Core Concepts (the mental models and abstractions)
+      Part 3 — Basic Implementation (getting something real working)
+      Part 4 — Advanced Edge Cases (production concerns, performance, and pitfalls)
+    For each chapter provide:
+      - Chapter title
+      - Learning objective (one sentence: "By the end of this chapter the reader will...")
+      - Key facts to include (bullet list referencing specific items from the Concept Map)
+      - Concepts to explicitly defer (so the Writer does not jump ahead)
+      - Approximate length target: Short (< 400 words), Medium (400-800 words), or Long (> 800 words)
+    Be ruthless about scope. A NanoBook is not an encyclopedia — cut anything that does
+    not directly accelerate a developer's ability to use {topic} confidently.
+  expected_output: >
+    A Markdown document titled "NanoBook Curriculum: {topic}" containing the four-part
+    Table of Contents followed by a detailed brief for every chapter. The brief format
+    must be consistent across all chapters and include all five fields listed above.
+  agent: curriculum_designer
+  context:
+    - documentation_extraction_task
+    - concept_mapping_task
+
+content_writing_task:
+  description: >
+    Write the complete NanoBook prose for {topic} by following the Curriculum Document
+    chapter by chapter. Rules you must not break:
+      - Every chapter must satisfy its stated learning objective completely.
+      - Every fact must trace back to the Raw Extracted Documentation — no hallucination.
+      - Code blocks must be complete, runnable (or clearly marked as pseudocode), and
+        annotated with inline comments explaining non-obvious lines.
+      - Tone: concise and authoritative, like a senior engineer explaining to a smart junior.
+        Zero filler sentences. Zero motivational padding.
+      - Heading hierarchy: H1 for Part titles, H2 for chapter titles, H3 for subsections.
+      - Defer any concept the Curriculum marks as "defer" — do not sneak it in early.
+      - End each chapter with a single "Key Takeaways" bullet list (3-5 bullets max).
+    Produce the entire NanoBook as one continuous Markdown document.
+  expected_output: >
+    A single Markdown document titled "NanoBook: {topic}" containing all chapters
+    written in full, organized under the four Parts from the Curriculum, with correct
+    heading hierarchy, properly tagged code blocks, and a "Key Takeaways" section at
+    the end of every chapter. The document must be self-contained and ready for review.
+  agent: technical_instructional_writer
+  context:
+    - documentation_extraction_task
+    - concept_mapping_task
+    - curriculum_design_task
+
+quality_assurance_task:
+  description: >
+    Perform a full pedagogical and technical review of the NanoBook draft for {topic}.
+    Review every chapter against three quality gates:
+
+    GATE 1 — PACING
+      - Does the chapter cover its stated learning objective fully?
+      - Does it move at a consistent pace, or does it rush key concepts / pad trivial ones?
+      - Flag any chapter where a core concept is introduced but not explained.
+
+    GATE 2 — ACCURACY
+      - Cross-reference every factual claim and every code snippet against the Raw
+        Extracted Documentation. Flag any claim not traceable to the source docs.
+      - Check all code blocks for syntactic correctness and correct language tags.
+      - Flag any hallucinated API names, parameters, or behaviors.
+
+    GATE 3 — FORMATTING
+      - Verify heading hierarchy (H1 > H2 > H3 — no skipped levels).
+      - Verify every code block has a language tag.
+      - Verify no raw HTML appears in the document.
+      - Verify each chapter ends with a "Key Takeaways" section of 3-5 bullets.
+
+    If any chapter fails a gate: produce a Rejection Report listing chapter number,
+    failed gate, specific line or section reference, and the required correction.
+    If all chapters pass all gates: output the final polished NanoBook Markdown,
+    correcting any minor formatting inconsistencies inline before delivering it.
+  expected_output: >
+    Either:
+    (A) A "QA Rejection Report: {topic}" listing every failed gate with chapter number,
+        gate name, issue description, and required fix — if any chapter fails; OR
+    (B) The final, publication-ready "NanoBook: {topic}" Markdown document with a
+        prepended QA sign-off block confirming all three gates passed for every chapter.
+  agent: pedagogical_quality_assurance_editor
+  context:
+    - documentation_extraction_task
+    - curriculum_design_task
+    - content_writing_task
+  output_file: nanobook_output.md
