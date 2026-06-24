@@ -1,5 +1,4 @@
-from langchain_openai import ChatOpenAI
-from crewai import Agent, Crew, Process, Task
+from crewai import Agent, Crew, Process, Task, LLM
 from crewai.project import CrewBase, agent, crew, task
 from crewai.agents.agent_builder.base_agent import BaseAgent
 from crewai_tools import (
@@ -169,6 +168,6 @@ class Nanobook():
             agents=self.agents,
             tasks=self.tasks,
             process=Process.hierarchical,
-            manager_llm=ChatOpenAI(model="gpt-4o")
+            manager_llm=LLM(model="gpt-4o"),
             verbose=True,
         )

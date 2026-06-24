@@ -17,6 +17,10 @@ def run():
     """
     inputs = {
         'topic': 'CUDA Kernels',
+        'urls': [
+        'https://docs.nvidia.com/cuda/cuda-c-programming-guide/',
+        'https://github.com/NVIDIA/cuda-samples',
+    ]
     }
 
     try:
