@@ -1,3 +1,4 @@
+from langchain_openai import ChatOpenAI
 from crewai import Agent, Crew, Process, Task
 from crewai.project import CrewBase, agent, crew, task
 from crewai.agents.agent_builder.base_agent import BaseAgent
@@ -132,6 +133,7 @@ class Nanobook():
                 self.documentation_extraction_task(),
                 self.concept_mapping_task(),
             ],
+            human_input=True # pause and ask for apporval
         )
  
     @task
@@ -166,6 +168,7 @@ class Nanobook():
         return Crew(
             agents=self.agents,
             tasks=self.tasks,
-            process=Process.sequential,
+            process=Process.hierarchical,
+            manager_llm=ChatOpenAI(model="gpt-4o")
             verbose=True,
         )

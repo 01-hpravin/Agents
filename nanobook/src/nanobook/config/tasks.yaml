@@ -80,6 +80,7 @@ content_writing_task:
       - Heading hierarchy: H1 for Part titles, H2 for chapter titles, H3 for subsections.
       - Defer any concept the Curriculum marks as "defer" — do not sneak it in early.
       - End each chapter with a single "Key Takeaways" bullet list (3-5 bullets max).
+      - Each Medium chapter must be at least 600 words, Long chapters at least 1000 words
     Produce the entire NanoBook as one continuous Markdown document.
   expected_output: >
     A single Markdown document titled "NanoBook: {topic}" containing all chapters
